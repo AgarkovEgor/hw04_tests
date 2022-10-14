@@ -6,6 +6,7 @@ from ..models import Post, Group, User
 
 User = get_user_model()
 
+
 class PostPagesTest(TestCase):
     @classmethod
     def setUpClass(cls):
