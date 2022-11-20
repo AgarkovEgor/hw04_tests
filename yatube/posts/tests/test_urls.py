@@ -64,7 +64,7 @@ class StaticURLTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_post_create_redirect_anonymous_on_admin_login(self):
-        """Проверка на редирект неавторизованного пользователя, на страницу входа"""
+        """Проверка на редирект неавторизованного пользователя"""
         response = self.guest_client.get('/posts/create/')
         self.assertRedirects(
             response, '/auth/login/?next=/posts/create/'
