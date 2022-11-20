@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Технологии{% endblock %}
 {% block content %}
-  {% comment %} Тут комменты пока не чищу, чуть позже буду доделывать, как и в остальных шаблонах {% endcomment %}
-  {% comment %} Колонки с отступом сверху и снизу {% endcomment %}
-  <div class="row">
-    <h1>Вот что я умею</h1>
-    {% comment %}
-      Боковой блок со списком технологий
-      Займет всю ширину блока на мобильном
-      и 25% при размерах экрана ≥768px
-    {% endcomment %}
-    <aside class="col-12 col-md-3">
+{% comment %} Колонки с отступом сверху и снизу {% endcomment %}
+<div class="row">
+  <h1>Вот что я умею</h1>
+  {% comment %}
+    Боковой блок со списком технологий 
+    Займет всю ширину блока на мобильном
+    и 25% при размерах экрана ≥768px
+  {% endcomment %}
+  <aside class="col-12 col-md-3">
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
         Python
@@ -19,14 +18,14 @@
         Django
       </li>
     </ul>
-    </aside>
-    {% comment %}
-      Статья
-      Займет всю ширину блока на мобильном
-      и 75% при размерах экрана ≥768px
-    {% endcomment %}
-    <article class="col-12 col-md-9">
-      <p>Текст страницы "Технологии"</p>
-    </article>
-  </div>
-{% endblock %}
+  </aside>
+  {% comment %}
+    Статья  
+    Займет всю ширину блока на мобильном
+    и 75% при размерах экрана ≥768px
+  {% endcomment %}
+  <article class="col-12 col-md-9">
+    <p>Текст страницы "Технологии"</p>
+  </article>
+</div>
+{% endblock %} 

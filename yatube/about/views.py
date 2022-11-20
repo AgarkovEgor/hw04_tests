@@ -1,16 +1,10 @@
-from django.views.generic.base import TemplateView
+from django.views.generic import TemplateView
 
 
 class AboutAuthorView(TemplateView):
-    # В переменной template_name обязательно указывается имя шаблона,
-    # на основе которого будет создана возвращаемая страница
     template_name = 'about/author.html'
 
-
 class AboutTechView(TemplateView):
-    # В переменной template_name обязательно указывается имя шаблона,
-    # на основе которого будет создана возвращаемая страница
     template_name = 'about/tech.html'
 
 
-# Create your views here.

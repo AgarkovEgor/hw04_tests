@@ -1,24 +1,27 @@
-{% extends "base.html" %}
-{% block title %}  Записи сообщества {{ group }}  {% endblock %}
+{% extends 'base.html' %}
+{%  block title %} Лев Толстой – зеркало русской революции {% endblock %}
 {% block content %}
-  <h1>  {{ group }}  </h1>
-  <p>  {{ group.description }}  </p>
-{% for post in page_obj %}
-  <article>
-    <ul>
-      <li>
-        Автор: {{ post.author.get_full_name }}
-      </li>
-      <li>
-        Дата публикации: {{ post.pub_date|date:"d E Y" }}
-      </li>
-    </ul>
-    <p>  {{ post.text }}  </p>
-  </article>
-  {% if post.group %}
-  <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-{% endif %}
-  {% if not forloop.last %}  <hr>  {% endif %}
-{% endfor %}
-    {% include 'posts/includes/paginator.html' %}
+      <div class="container py-5">
+        <h1>{{ group.title }}</h1>
+        <p>
+          {{ group.description }}
+        </p>
+        {% for post in page_obj %}
+        <article>
+          <ul>
+            <li>
+              Автор: {{post.author.get_full_name}}
+            </li>
+            <li>
+              Дата публикации: {{post.pub_date|date:"d E Y"}}
+            </li>
+          </ul>
+          <p>
+            {{post.text|linebreaksbr}}
+          </p>
+        </article>
+        <hr>
+        {% endfor %}
+        {% include 'posts/includes/paginator.html' %}
+      </div>
 {% endblock %}

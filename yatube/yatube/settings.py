@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '4xzsj*2ctgm0-=0nh-=o!0c57zkee^hz8ay=vm9u^5dnbi@h=-'
+SECRET_KEY = '^(v^-6y1e^rmwf$*44$#v1t%rj66r&@3^as)4i^z-&!s+jey&m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,9 +37,9 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'about.apps.AboutConfig',
-    'posts.apps.PostsConfig',
-    'users.apps.UsersConfig',
     'core.apps.CoreConfig',
+    'users.apps.UsersConfig',
+    'posts.apps.PostsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -126,9 +126,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'posts:index'
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+

@@ -1,8 +1,6 @@
-<!DOCTYPE html>
 {% load static %}
-
+<!DOCTYPE html>
 <html lang="ru">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,15 +13,17 @@
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <title>{% block title %}Yatube{% endblock %}</title>
 </head>
-
-<body>
-  {% include 'includes/header.html' %}
-  <main class="container py-5">
-    {% block content %}Какой-то контент{% endblock %}
-  </main>
-  {% include 'includes/footer.html' %}
-</body>
-
+  <body>
+    <header>
+      {% include 'includes/header.html' %}
+    </header>
+    <main>
+      {% block content %}
+        Контент не подвезли :(
+      {% endblock %}
+    </main>
+    <footer>
+      {% include 'includes/footer.html' %}
+    </footer>
+  </body>
 </html>
-
-
