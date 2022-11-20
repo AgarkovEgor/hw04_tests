@@ -34,14 +34,14 @@ urlpatterns = [
          name='password_reset_form'),
     path('password_reset/done',
          PasswordResetDoneView.as_view(
-            template_name='users/password_reset_done.html'),
+          template_name='users/password_reset_done.html'),
          name='password_reset_done'),
     path('reset/,<uibd64>/<token>',
          PasswordResetConfirmView.as_view(
-             template_name='users/password_reset_confirm'),
+          template_name='users/password_reset_confirm'),
          name='password_reset_confirm'),
     path('reset/done',
          PasswordResetCompleteView.as_view(
-             template_name='users/password_reset_complete'),
+          template_name='users/password_reset_complete'),
          name='password_reset_complete'),
 ]
