@@ -51,7 +51,7 @@ class StaticURLTests(TestCase):
             f"/profile/{self.user.username}/": "posts/profile.html",
             f"/posts/{self.post.id}/": "posts/post_detail.html",
             f"/posts/{self.post.id}/edit/": "posts/post_create.html",
-            "/posts/create/": "posts/post_create.html",
+            "/create/": "posts/post_create.html",
         }
         for url, template in templates_url_names.items():
             with self.subTest(url=url):
@@ -65,9 +65,9 @@ class StaticURLTests(TestCase):
 
     def test_post_create_redirect_anonymous_on_admin_login(self):
         """Проверка на редирект неавторизованного пользователя"""
-        response = self.guest_client.get('/posts/create/')
+        response = self.guest_client.get('/create/')
         self.assertRedirects(
-            response, '/auth/login/?next=/posts/create/'
+            response, '/auth/login/?next=/create/'
         )
 
     def test_post_edit_is_available_only_author(self):
