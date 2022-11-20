@@ -78,11 +78,3 @@ class StaticURLTests(TestCase):
         response = self.authorized_client.get(f'/posts/{self.post.id}/edit/')
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    # def test_post_edit_redirect_if_not_author(self):
-        # self.user = User.objects.get(username=self.user2)
-        # self.authorized_client = Client()
-        # self.authorized_client.force_login(self.user)
-        # response = self.authorized_client.get(f'/posts/{self.post.id}/edit/')
-        # self.assertRedirects(
-            # response, f'/posts/{self.post.id}/'
-        # )
