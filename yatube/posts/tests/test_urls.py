@@ -77,4 +77,3 @@ class StaticURLTests(TestCase):
         self.authorized_client.force_login(self.user)
         response = self.authorized_client.get(f'/posts/{self.post.id}/edit/')
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
