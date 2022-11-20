@@ -54,7 +54,7 @@ class PostFormTests(TestCase):
             follow=True,
         )
         self.assertRedirects(
-            response, reverse("posts:post_detail", args=[self.post.id]))
+            response, reverse("posts:profile", args=[self.post.author]))
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertTrue(Post.objects.filter(
             text="Измененный пост", group=self.group.id).exists())
