@@ -7,6 +7,7 @@ from ..models import Post, Group
 
 User = get_user_model()
 
+
 class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -101,7 +102,8 @@ class PostPagesTests(TestCase):
         def test_second_profile_page_show_expected_number(self):
             """Проверяем  кол-во постов на странице профиля(стр2)"""
             response = self.guest_client.get(
-                reverse('posts:profile', kwargs={'username': self.post.author}))
+                reverse('posts:profile',
+                        kwargs={'username': self.post.author}))
             self.assertEqual(len(response.context.get('page_obj')), 3)
 
     def test_pages_uses_correct_template(self):
@@ -152,7 +154,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(post.pk, self.post.pk)
 
     def test_post_edit_page_show_correct_context(self):
-        """Проверяем что на страницу редактирования поста передается правильный контекст"""
+        """Проверка страницы редактирования на правильный контекст"""
         response = self.authorized_client.get(
             reverse('posts:post_edit', kwargs={'post_id': self.post.id}))
         form_fields = {
@@ -165,7 +167,7 @@ class PostPagesTests(TestCase):
                 self.assertIsInstance(form_field, expected)
 
     def test_post_create_page_show_correct_context(self):
-        """Проверяем что на страницу создания поста передается правильный контекст"""
+        """Проверяем страницу создания поста на правильный контекст"""
         response = self.authorized_client.get(reverse('posts:post_create'))
         form_fields = {
             "text": forms.fields.CharField,
@@ -205,9 +207,3 @@ class PostPagesTests(TestCase):
                 response = self.authorized_client.get(value)
                 form_field = response.context['page_obj']
                 self.assertNotIn(expected, form_field)
-
-
-
-
-
-
