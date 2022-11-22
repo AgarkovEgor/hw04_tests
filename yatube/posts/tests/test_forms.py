@@ -48,8 +48,26 @@ class PostFormTests(TestCase):
                         (new_post.group == self.group))
     def test_post_edit(self):
         """Проверка изменения поста"""
+        group_new = Group.objects.create(
+            title='Тестовая группа 2',
+            slug='test-slug2',
+            description='Тестовое описание 2'
+        )
         posts_count = Post.objects.count()
-        form_data = {"text": "Измененный пост", "group": self.post.group.id}
+        form_data = {
+            "text": "Измененный пост",
+            "group": group_new.id,
+        }
+        old_group_response1 = self.authorized_client.get(
+            reverse('posts:group_posts', args=[self.group.slug])
+        )
+        posts_count_old_group = old_group_response1.context[
+            'page_obj'].paginator.count
+        new_group_response2 = self.authorized_client.get(
+            reverse('posts:group_posts', args=[group_new.slug])
+        )
+        posts_count_new_group = new_group_response2.context[
+            'page_obj'].paginator.count
         response = self.authorized_client.post(
             reverse("posts:post_edit", args=[self.post.id]),
             data=form_data,
@@ -58,11 +76,20 @@ class PostFormTests(TestCase):
         old_group_response = self.authorized_client.get(
             reverse('posts:group_posts', args=[self.group.slug])
         )
+        new_group_response = self.authorized_client.get(
+            reverse('posts:group_posts', args=[group_new.slug])
+        )
         self.assertRedirects(
             response, reverse("posts:post_detail", args=[self.post.id]))
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertTrue(Post.objects.filter(
-            text=form_data['text'], group=self.group.id).exists())
+            text=form_data['text'], group=group_new.id).exists())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertTrue(
-            old_group_response.context['page_obj'].paginator.count == 0)
+        self.assertEqual(
+            old_group_response.context['page_obj'].paginator.count,
+            posts_count_old_group - 1
+        )
+        self.assertEqual(
+            new_group_response.context['page_obj'].paginator.count,
+            posts_count_new_group + 1
+        )
