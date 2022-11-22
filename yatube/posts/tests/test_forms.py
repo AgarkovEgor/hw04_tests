@@ -37,13 +37,15 @@ class PostFormTests(TestCase):
             data=form_data,
             follow=True
         )
+        new_post = Post.objects.last()
         self.assertEqual(Post.objects.count(), post_count + 1)
         self.assertRedirects(
             response, reverse('posts:profile',
                               kwargs={'username': self.user.username}))
-        self.assertTrue(Post.objects.filter(text='Тестовый пост').exists())
+        self.assertTrue(Post.objects.filter(text=form_data['text']).exists())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
+        self.assertTrue((new_post.author == self.user) and
+                        (new_post.group == self.group))
     def test_post_edit(self):
         """Проверка изменения поста"""
         posts_count = Post.objects.count()
@@ -53,9 +55,14 @@ class PostFormTests(TestCase):
             data=form_data,
             follow=True,
         )
+        old_group_response = self.authorized_client.get(
+            reverse('posts:group_posts', args=[self.group.slug])
+        )
         self.assertRedirects(
             response, reverse("posts:post_detail", args=[self.post.id]))
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertTrue(Post.objects.filter(
-            text="Измененный пост", group=self.group.id).exists())
+            text=form_data['text'], group=self.group.id).exists())
         self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTrue(
+            old_group_response.context['page_obj'].paginator.count == 0)
