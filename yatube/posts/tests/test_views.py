@@ -1,13 +1,20 @@
+import shutil
+import tempfile
+
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django import forms
+from django.conf import settings
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from ..models import Post, Group
 
 User = get_user_model()
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -19,10 +26,24 @@ class PostPagesTests(TestCase):
             slug='test-slug',
             description='Тестовое описание'
         )
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
+        )
+        uploaded = SimpleUploadedFile(
+            name='small.gif',
+            content=small_gif,
+            content_type='image/gif'
+        )
         cls.post = Post.objects.create(
             author=cls.user,
             text='Тестовый пост',
-            group=cls.group
+            group=cls.group,
+            image=uploaded
         )
         cls.templates_pages_names = {
             reverse("posts:index"): "posts/index.html",
@@ -40,6 +61,11 @@ class PostPagesTests(TestCase):
             ): "posts/post_create.html",
             reverse("posts:post_create"): "posts/post_create.html",
         }
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self):
         self.guest_client = Client()
@@ -121,6 +147,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(post.text, self.post.text)
         self.assertEqual(post.author, self.post.author)
         self.assertEqual(post.group, self.post.group)
+        self.assertEqual(post.image, self.post.image)
         self.assertEqual(post.pk, self.post.pk)
 
     def test_group_list_show_correct_context(self):
@@ -134,6 +161,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(group_obj.author, self.post.author)
         self.assertEqual(group_obj.group, self.post.group)
         self.assertEqual(group_obj.pk, self.post.pk)
+        self.assertEqual(group_obj.image, self.post.image)
 
     def test_profile_page_show_correct_context(self):
         """Проверяем что на страницу профиля передается правильный контекст"""
@@ -141,7 +169,13 @@ class PostPagesTests(TestCase):
             reverse('posts:profile', kwargs={'username': self.post.author})
         )
         author = response.context.get('author')
+        author_obj = response.context.get('page_obj')[0]
         self.assertEqual(author.username, self.user.username)
+        self.assertEqual(author_obj.text, self.post.text)
+        self.assertEqual(author_obj.author, self.post.author)
+        self.assertEqual(author_obj.group, self.post.group)
+        self.assertEqual(author_obj.pk, self.post.pk)
+        self.assertEqual(author_obj.image, self.post.image)
 
     def test_detail_page_show_correct_context(self):
         """Проверяем что на страницу поста передается правильный контекст"""
@@ -152,6 +186,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(post.author, self.post.author)
         self.assertEqual(post.group, self.post.group)
         self.assertEqual(post.pk, self.post.pk)
+        self.assertEqual(post.image, self.post.image)
 
     def test_post_edit_page_show_correct_context(self):
         """Проверка страницы редактирования на правильный контекст"""

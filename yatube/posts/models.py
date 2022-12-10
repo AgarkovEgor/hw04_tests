@@ -44,3 +44,21 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text[:15]
+
+
+class Comments(models.Model):
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='comment'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comment'
+    )
+    text = models.TextField(
+        'Текст коментария',
+        help_text='Напишите комментарий'
+    )
+    created = models.DateTimeField(auto_now_add=True)

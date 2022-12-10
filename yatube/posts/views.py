@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from .models import Post, Group, User
-from .forms import PostForm
+from .models import Post, Group, User, Comments
+from .forms import PostForm, CommentsForm
 
 
 def paginator_func(post_list, request):
@@ -44,9 +44,13 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     template_name = 'posts/post_detail.html'
+    form = CommentsForm(request.POST or None)
+    comment = get_object_or_404(Comments, post=post_id)
     post = get_object_or_404(Post, pk=post_id)
     context = {
-        'post': post
+        'post': post,
+        'form': form,
+        'comment': comment
     }
     return render(request, template_name, context)
 
@@ -54,7 +58,8 @@ def post_detail(request, post_id):
 @login_required
 def post_create(request):
     template_name = 'posts/post_create.html'
-    form = PostForm(request.POST or None)
+    form = PostForm(request.POST or None,
+                    files=request.FILES or None)
     if request.method == 'POST' and form.is_valid():
         new_post = form.save(commit=False)
         new_post.author = request.user
@@ -84,3 +89,15 @@ def post_edit(request, post_id):
         'is_edit': True
     }
     return render(request, template_name, context)
+
+
+@login_required
+def add_comment(request, post_id):
+    # Получите пост и сохраните его в переменную post.
+    form = CommentsForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.author = request.user
+        comment.post = post
+        comment.save()
+    return redirect('posts:post_detail', post_id=post_id)
