@@ -46,19 +46,19 @@ class Post(models.Model):
         return self.text[:15]
 
 
-class Comments(models.Model):
+class Comment(models.Model):
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        related_name='comment'
+        related_name='comments'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='comment'
+        related_name='comments'
     )
     text = models.TextField(
         'Текст коментария',
-        help_text='Напишите комментарий'
+        help_text='Напишите комментарий',
     )
     created = models.DateTimeField(auto_now_add=True)
