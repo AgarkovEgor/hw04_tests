@@ -38,7 +38,6 @@ class Post(models.Model):
         upload_to='posts/',
         blank=True)
 
-
     class Meta:
         ordering = ('-pub_date',)
 
@@ -62,3 +61,6 @@ class Comment(models.Model):
         help_text='Напишите комментарий',
     )
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created',)

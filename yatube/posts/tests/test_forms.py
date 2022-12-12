@@ -7,8 +7,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-
-from posts.models import Post, Group, User
+from ..models import Post, Group, User, Comment
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -26,7 +25,14 @@ class PostFormTests(TestCase):
             description="Тестовое описание",
         )
         cls.post = Post.objects.create(
-            author=cls.user, text="Тестовый пост", group=cls.group
+            author=cls.user,
+            text="Тестовый пост",
+            group=cls.group
+        )
+        cls.comment = Comment.object.create(
+            post=cls.post,
+            author=cls.author,
+            text='Тестовый комментарий'
         )
 
     @classmethod
@@ -139,6 +145,27 @@ class PostFormTests(TestCase):
             new_group_response.context["page_obj"].paginator.count,
             posts_count_new_group + 1,
         )
+
+    def test_add_comment(self):
+        "Проверка, что комментарий появляется на странице"
+        comment_count = Comment.objects.count()
+        form_data = {
+            'post': self.post.id,
+            'author': self.post.author,
+            'text': 'Тест коммент'
+        }
+        response = self.authorized_client.post(
+            reverse('posts:add_comment'),
+            data= form_data,
+            follow = True
+        )
+        self.assertRedirects(response, reverse(
+            'post:post_detail',args=[self.post.id]))
+        self.assertEqual(Comment.objects.count(), comment_count + 1)
+
+
+
+
 
 
 
