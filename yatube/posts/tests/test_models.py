@@ -9,7 +9,7 @@ class PostModelTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='egor')
+        cls.user = User.objects.create_user(username='egor3')
         cls.group = Group.objects.create(
             title='Тестовая группа',
             slug='Тестовый слаг',

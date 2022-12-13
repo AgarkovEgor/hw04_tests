@@ -19,7 +19,7 @@ class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username="egor")
+        cls.user = User.objects.create_user(username="egor2")
         # Создадим запись в БД
         cls.group = Group.objects.create(
             title='Тестовая группа',
@@ -242,3 +242,4 @@ class PostPagesTests(TestCase):
                 response = self.authorized_client.get(value)
                 form_field = response.context['page_obj']
                 self.assertNotIn(expected, form_field)
+
