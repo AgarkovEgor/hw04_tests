@@ -31,7 +31,7 @@ class PostFormTests(TestCase):
         )
         cls.comment = Comment.objects.create(
             post=cls.post,
-            author=cls.author,
+            author=cls.user,
             text='Тестовый комментарий'
         )
 
@@ -155,9 +155,9 @@ class PostFormTests(TestCase):
             'text': 'Тест коммент'
         }
         response = self.authorized_client.post(
-            reverse('posts:add_comment'),
-            data= form_data,
-            follow = True
+            reverse('posts:add_comment', args=[self.post.id]),
+            data=form_data,
+            follow=True
         )
         self.assertRedirects(response, reverse(
             'post:post_detail', args=[self.post.id]))
@@ -167,7 +167,7 @@ class PostFormTests(TestCase):
         """Проверка добавления поста авторизованным пользователем"""
         self.authorized_client.get(
             reverse('posts:add_comment', args=[self.post.id]))
-        post_new_comment = {'text': 'Новый комментарий',}
+        post_new_comment = {'text': 'Новый комментарий'}
         self.authorized_client.post(
             reverse('posts:add_comment', args=[self.post.id]),
             data=post_new_comment)
