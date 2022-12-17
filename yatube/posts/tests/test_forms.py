@@ -25,21 +25,16 @@ class PostFormTests(TestCase):
             description="Тестовое описание",
         )
         cls.post = Post.objects.create(
-            author=cls.user,
-            text="Тестовый пост",
-            group=cls.group
+            author=cls.user, text="Тестовый пост", group=cls.group
         )
         cls.comment = Comment.objects.create(
-            post=cls.post,
-            author=cls.user,
-            text='Тестовый комментарий'
+            post=cls.post, author=cls.user, text="Тестовый комментарий"
         )
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
-
 
     def setUp(self):
         self.guest_client = Client()
@@ -50,21 +45,20 @@ class PostFormTests(TestCase):
         """Проверка создания новой записи в БД"""
         post_count = Post.objects.count()
         small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B'
+            b"\x47\x49\x46\x38\x39\x61\x02\x00"
+            b"\x01\x00\x80\x00\x00\x00\x00\x00"
+            b"\xFF\xFF\xFF\x21\xF9\x04\x00\x00"
+            b"\x00\x00\x00\x2C\x00\x00\x00\x00"
+            b"\x02\x00\x01\x00\x00\x02\x02\x0C"
+            b"\x0A\x00\x3B"
         )
         uploaded = SimpleUploadedFile(
-            name='small.gif',
-            content=small_gif,
-            content_type='image/gif'
+            name="small.gif", content=small_gif, content_type="image/gif"
         )
         form_data = {
             "text": "Тестовый пост",
-            "image": uploaded,}
+            "image": uploaded,
+        }
         response = self.authorized_client.post(
             reverse("posts:post_create"), data=form_data, follow=True
         )
@@ -89,33 +83,29 @@ class PostFormTests(TestCase):
         )
         posts_count = Post.objects.count()
         small_gif1 = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B')
+            b"\x47\x49\x46\x38\x39\x61\x02\x00"
+            b"\x01\x00\x80\x00\x00\x00\x00\x00"
+            b"\xFF\xFF\xFF\x21\xF9\x04\x00\x00"
+            b"\x00\x00\x00\x2C\x00\x00\x00\x00"
+            b"\x02\x00\x01\x00\x00\x02\x02\x0C"
+            b"\x0A\x00\x3B"
+        )
         uploaded1 = SimpleUploadedFile(
-            name='small.gif',
-            content=small_gif1,
-            content_type='image/gif')
+            name="small.gif", content=small_gif1, content_type="image/gif"
+        )
         form_data = {
             "text": "Измененный пост",
             "group": group_new.id,
-            "image": uploaded1
+            "image": uploaded1,
         }
         old_group_response1 = self.authorized_client.get(
             reverse("posts:group_posts", args=[self.group.slug])
         )
-        posts_count_old_group = old_group_response1.context[
-            "page_obj"
-        ].paginator.count
+        posts_count_old_group = old_group_response1.context["page_obj"].paginator.count
         new_group_response2 = self.authorized_client.get(
             reverse("posts:group_posts", args=[group_new.slug])
         )
-        posts_count_new_group = new_group_response2.context[
-            "page_obj"
-        ].paginator.count
+        posts_count_new_group = new_group_response2.context["page_obj"].paginator.count
         response = self.authorized_client.post(
             reverse("posts:post_edit", args=[self.post.id]),
             data=form_data,
@@ -132,9 +122,7 @@ class PostFormTests(TestCase):
         )
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertTrue(
-            Post.objects.filter(
-                text=form_data["text"], group=group_new.id
-            ).exists()
+            Post.objects.filter(text=form_data["text"], group=group_new.id).exists()
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
@@ -148,37 +136,29 @@ class PostFormTests(TestCase):
 
     def test_add_comment(self):
         "Проверка, что комментарий появляется на странице"
-        comment_count = Comment.objects.count()
-        form_data = {
-            'post': self.post.id,
-            'author': self.post.author,
-            'text': 'Тест коммент'
-        }
+        comment_count = self.post.comments.count()
+        form_data = {"text": "Тест коммент"}
         response = self.authorized_client.post(
-            reverse('posts:add_comment', args=[self.post.id]),
+            reverse("posts:add_comment", args=[self.post.id]),
             data=form_data,
-            follow=True
+            follow=True,
         )
-        self.assertRedirects(response, reverse(
-            'post:post_detail', args=[self.post.id]))
-        self.assertEqual(Comment.objects.count(), comment_count + 1)
+        self.assertRedirects(
+            response, reverse("posts:post_detail", args=[self.post.id])
+        )
+        self.assertEqual(self.post.comments.count(), comment_count + 1)
+        self.assertEqual(self.post.comments.latest("id").text, form_data["text"])
 
-    def test_add_comment_authorized_user(self):
-        """Проверка добавления поста авторизованным пользователем"""
-        self.authorized_client.get(
-            reverse('posts:add_comment', args=[self.post.id]))
-        post_new_comment = {'text': 'Новый комментарий'}
-        self.authorized_client.post(
-            reverse('posts:add_comment', args=[self.post.id]),
-            data=post_new_comment)
-        self.assertTrue(Comment.objects.filter(text=post_new_comment['text'])
-                        .exists())
-
-
-
-
-
-
-
-
-
+    def test_add_comment_anon_user(self):
+        """Проверка добавления поста неавторизованным пользователем"""
+        comment_count = self.post.comments.count()
+        form_data = {"text": "Тест коммент"}
+        response = self.client.post(
+            reverse("posts:add_comment", args=[self.post.id]),
+            data=form_data,
+            follow=True,
+        )
+        self.assertRedirects(
+            response, f"/auth/login/?next=/posts/{self.post.id}/comment/"
+        )
+        self.assertEqual(self.post.comments.count(), comment_count)
